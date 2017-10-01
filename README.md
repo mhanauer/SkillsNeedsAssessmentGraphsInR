@@ -27,7 +27,6 @@ head(needsOverall)
 ```
 Here create histograms for each of them
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-# SEL Overall
 theme_set(theme_grey(base_size = 13))
 p = ggplot(needsOverall, aes(x = item, y = selOverall));p
 p = p+geom_bar(stat = "identity"); p
@@ -37,8 +36,47 @@ p = p+ggtitle("SEL Average Scores Across All Items");p
 p = p + theme(plot.title = element_text(hjust = 0.5)); p
 p = p+scale_y_continuous(name="SEL Average Score"); p
 p = p+scale_x_continuous(name="Item Number"); p
-p = p+ scale_x_continuous(breaks=seq(1,6, 1)); p
+p = p + scale_x_continuous(breaks=seq(1,6, 1)); p
+p = p+ coord_cartesian(ylim = c(1, 7)); p
+p = p + scale_y_continuous(breaks=seq(1,7, 1)); p
+p = p+ labs(x = "Item Number"); p
+p = p+ labs(y = "SEL Average Score"); p
+
+############CCR###########################
+theme_set(theme_grey(base_size = 13))
+p = ggplot(needsOverall, aes(x = item, y = ccrOverall));p
+p = p+geom_bar(stat = "identity"); p
+p = p + geom_text(aes(label=ccrOverall), vjust=1.6, color="white", size=3.5)+
+  theme_minimal(); p
+p = p+ggtitle("College and Career Readiness Average Scores Across All Items");p
+p = p + theme(plot.title = element_text(hjust = 0.5)); p
+p = p+scale_y_continuous(name="CCR Average Score"); p
+p = p+scale_x_continuous(name="Item Number"); p
+p = p + scale_x_continuous(breaks=seq(1,6, 1)); p
+p = p+ coord_cartesian(ylim = c(1, 7)); p
+p = p + scale_y_continuous(breaks=seq(1,7, 1)); p
+p = p+ labs(x = "Item Number"); p
+p = p+ labs(y = "College and Career Readiness Average Score"); p
+
+############AS###########################
+theme_set(theme_grey(base_size = 13))
+p = ggplot(needsOverall, aes(x = item, y = asOverall));p
+p = p+geom_bar(stat = "identity"); p
+p = p + geom_text(aes(label=asOverall), vjust=1.6, color="white", size=3.5)+
+  theme_minimal(); p
+p = p+ggtitle("Academic Success Average Scores Across All Items");p
+p = p + theme(plot.title = element_text(hjust = 0.5)); p
+p = p+scale_y_continuous(name="Academic Success Average Score"); p
+p = p+scale_x_continuous(name="Item Number"); p
+p = p + scale_x_continuous(breaks=seq(1,6, 1)); p
+p = p+ coord_cartesian(ylim = c(1, 7)); p
+p = p + scale_y_continuous(breaks=seq(1,7, 1)); p
+p = p+ labs(x = "Item Number"); p
+p = p+ labs(y = "Academic Success Average Score"); p
+
 ```
+
+
 Create chnage over time for each of the three
 ```{r, message=FALSE, warning=FALSE, echo=FALSE}
 datTimeAgg = round(aggregate(dat, list(dat$time), mean),2)
