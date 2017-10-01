@@ -37,7 +37,9 @@ p = p+ggtitle("SEL Average Scores Across All Items");p
 p = p + theme(plot.title = element_text(hjust = 0.5)); p
 p = p+scale_y_continuous(name="SEL Average Score"); p
 p = p+scale_x_continuous(name="Item Number"); p
-p = p+ scale_x_continuous(breaks=seq(1,6, 1)); p
+p = p + scale_x_continuous(breaks=seq(1,6, 1)); p
+p = p+ coord_cartesian(ylim = c(1, 7)); p
+p = p + scale_y_continuous(breaks=seq(1,7, 1)); p
 ```
 Create chnage over time for each of the three
 ```{r, message=FALSE, warning=FALSE, echo=FALSE}
