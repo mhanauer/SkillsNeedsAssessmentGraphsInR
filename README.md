@@ -1,81 +1,101 @@
 ---
-title: "Example of Report"
+title: "Example of Report in R"
 output:
   word_document: default
   pdf_document: default
   html_document: default
 ---
-Here is an example of an artificial report for four treatment groups with two outcomes (outcome1, outcome2) measured on a scale ranging from 70 to 100.  I also analyzed how important factors to implementation of treatments such as fidelity (1 = 100% fidelity, 0 = less than 100% fidelity) and whether or not a document was turned in on time (onTimeDoc: 1 = turned in documents on time 0 = did not) over 4 time points (fall, winter, spring, and summer).
-
-Additionally, I included a costs analysis to evaluate how income, costs, and revenue (income - costs) changed on a monthly basis for the implementation of the treatments.
+Here is an example of a recent needs assessment conducted for two local school districts.  In the graphs below I have bar charts showing the average scores across respondents to the six items displayed below on a 7 point Likert scale for the following categories social and emotional learning (SEL), college and career readiness (CCR), and academic success (AS).  These items were constructed from previous research and made to fit the context of the needs assessments with the support of the local school districts.  Finally, I show a table with the same information with red values indicating the lowest score on each item across the three categories.
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-library(Hmisc)
-library(dplyr)
-library(lme4)
-library(nlme)
+selItems = c("My students have become better able to manage their emotions.", "Other staff in my school would say that my students have become better able to manage their emotions.", "I have noticed that other students at my school have become better able to manage their emotions.", "My school has enough resources to support students’ social and emotional learning.", "My school’s program(s) for social and emotional learning are adequate.", "I am satisfied with the amount of professional development training I have received to address my students’ social and emotional learning.")
+
+ccrItems = c("My students have become better prepared for college and their future careers.", "Other staff in my school would say that my students have become better prepared for college and their future careers.", "I have noticed that other students at my school have become better prepared for college and their future careers.", "My school has enough resources to support students’ college and career readiness programs.", "My school’s program(s) for college and career readiness are adequate.", "am satisfied with the amount of professional development training I have received to address my students’ college and career readiness.")
+
+asItems = c("My students have improved academically.", "Other staff in my school would say that my students have improved academically.", "I have noticed other students at my school improving academically.", "My school has enough resources to support students’ academic success.", "My school’s program(s) for academic success are adequate.", "I am satisfied with the amount of professional development training I have received to address my students’ academic success.")
+
+itemNumbers = c(1:6)
+
+tableItems = as.data.frame(cbind(itemNumbers, selItems, ccrItems, asItems))
+
 library(ggplot2)
-library(scales)
-library(quantmod)
-library(psych)
 
 selOverall = c(5, 4.6, 4.4, 3.9, 3.8, 3.8)
 ccrOverall = c(5.39, 5.31, 5.28, 4.98, 4.99, 4.73)
 asOverall = c(5.71, 5.62, 5.7, 5.05, 5.18, 5.1)
 item = c(1:6)
-needsOverall = as.data.frame(cbind(selOverall, ccrOverall, asOverall, item))
-head(needsOverall)
-```
-Here create histograms for each of them
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
-# SEL Overall
-theme_set(theme_grey(base_size = 13))
-p = ggplot(needsOverall, aes(x = item, y = selOverall));p
-p = p+geom_bar(stat = "identity"); p
-p = p + geom_text(aes(label=selOverall), vjust=1.6, color="white", size=3.5)+
-  theme_minimal(); p
-p = p+ggtitle("SEL Average Scores Across All Items");p
-p = p + theme(plot.title = element_text(hjust = 0.5)); p
-p = p+scale_y_continuous(name="SEL Average Score"); p
-p = p+scale_x_continuous(name="Item Number"); p
-p = p+ scale_x_continuous(breaks=seq(1,6, 1)); p
-```
-Create chnage over time for each of the three
-```{r, message=FALSE, warning=FALSE, echo=FALSE}
-datTimeAgg = round(aggregate(dat, list(dat$time), mean),2)
-datTimeAgg$outcome1Change = Delt(datTimeAgg$outcome1)
-datTimeAgg$outcome2Change = Delt(datTimeAgg$outcome2)
-theme_set(theme_grey(base_size = 13))
-p = ggplot(datTimeAgg, aes(x = time))
-p = p+geom_line(aes(y = outcome1, color = "Outcome 1"))
-p = p+geom_line(aes(y = outcome2, color = "Outcome 2"))
-p = p+labs(y = "Outcomes 1 & 2")
-p = p +expand_limits(y = c(70, 100))
-p = p+ggtitle("Outcomes 1 and 2 Over Time");p
-p = p+ scale_x_continuous(name="SEL Overall ")
-```
-Create fancy tables for of them.
-```{r, message=FALSE, warning=FALSE, echo=FALSE}
-theme_set(theme_grey(base_size = 13))
-p = ggplot(datTimeAgg, aes(x = time))
-p = p+geom_line(aes(y = outcome1Change, color = "% Change in Outcome 1"))
-p = p+geom_line(aes(y = outcome2Change, color = "% Change in Outcome 2"))
-p = p+labs(y = "% Change in Outcomes 1 & 2")
-p = p +expand_limits(y = c(-.05, .05))
-scale_x_continuous(limits = c(2, 4))
-p = p+ scale_x_continuous(breaks=seq(2,4, 1))
-p = p + scale_y_continuous(labels = percent)
-p = p+ggtitle("% Change in Outcomes 1 and 2 Over Time");p
+needsOverall = as.data.frame(cbind(item, selOverall, ccrOverall, asOverall))
 ```
 
-```{r, message=FALSE, warning=FALSE, echo=FALSE}
-#Outcome 1 over time 
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 theme_set(theme_grey(base_size = 13))
-p = ggplot(datTimeAgg, aes(x = time))
-p = p+geom_line(aes(y = fidelity, group = treatment))
-p = p + geom_line(aes(y = fidelity,shape=treatment, color=treatment))
-p = p+labs(y = "% Fidelity")
-p = p +expand_limits(y = c(.25, 1))
-p = p + scale_y_continuous(labels = percent)
-p = p+ggtitle("% Fidelity by Treatment over Time");p
+p = ggplot(needsOverall, aes(x = item, y = selOverall))
+p = p+geom_bar(stat = "identity")
+p = p + geom_text(aes(label=selOverall), vjust=1.6, color="white", size=3.5)+
+  theme_minimal()
+p = p+ggtitle("SEL Average Scores Across All Items")
+p = p + theme(plot.title = element_text(hjust = 0.5))
+p = p+scale_y_continuous(name="SEL Average Score")
+p = p+scale_x_continuous(name="Item Number")
+p = p + scale_x_continuous(breaks=seq(1,6, 1))
+p = p+ coord_cartesian(ylim = c(1, 7))
+p = p + scale_y_continuous(breaks=seq(1,7, 1))
+p = p+ labs(x = "Item Number")
+p = p+ labs(y = "SEL Average Score");p
 ```
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+############CCR###########################
+theme_set(theme_grey(base_size = 13))
+p = ggplot(needsOverall, aes(x = item, y = ccrOverall))
+p = p+geom_bar(stat = "identity")
+p = p + geom_text(aes(label=ccrOverall), vjust=1.6, color="white", size=3.5)+
+  theme_minimal()
+p = p+ggtitle("College and Career Readiness Average Scores Across All Items")
+p = p + theme(plot.title = element_text(hjust = 0.5))
+p = p+scale_y_continuous(name="CCR Average Score")
+p = p+scale_x_continuous(name="Item Number")
+p = p + scale_x_continuous(breaks=seq(1,6, 1))
+p = p+ coord_cartesian(ylim = c(1, 7))
+p = p + scale_y_continuous(breaks=seq(1,7, 1))
+p = p+ labs(x = "Item Number")
+p = p+ labs(y = "College and Career Readiness Average Score");p
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+############AS###########################
+theme_set(theme_grey(base_size = 13))
+p = ggplot(needsOverall, aes(x = item, y = asOverall))
+p = p+geom_bar(stat = "identity")
+p = p + geom_text(aes(label=asOverall), vjust=1.6, color="white", size=3.5)+
+  theme_minimal()
+p = p+ggtitle("Academic Success Average Scores Across All Items")
+p = p + theme(plot.title = element_text(hjust = 0.5))
+p = p+scale_y_continuous(name="Academic Success Average Score")
+p = p+scale_x_continuous(name="Item Number")
+p = p + scale_x_continuous(breaks=seq(1,6, 1))
+p = p+ coord_cartesian(ylim = c(1, 7))
+p = p + scale_y_continuous(breaks=seq(1,7, 1))
+p = p+ labs(x = "Item Number")
+p = p+ labs(y = "Academic Success Average Score");p
+```
+Table 1: Table format of SEL, College and Career Readiness, and Academic Success Average Scores Across each Item
+```{r, message=FALSE, warning=FALSE, echo=FALSE}
+colnames(needsOverall) = c("Item","SEL_Average", "CCR_Average", "AS_Average")
+library(xtable)
+```
+\begin{table}[ht]
+\centering
+\begin{tabular}{rlrrrr}
+  \hline
+ & Item & SEL\_Average & CCR\_Average & AS\_Average \\ 
+  \hline
+  1 & 1.00 & 5.00 & 5.39 & 5.71 \\ 
+  2 & 2.00 & 4.60 & 5.31 & 5.62 \\ 
+  3 & 3.00 & 4.40 & 5.28 & 5.70 \\ 
+  4 & 4.00 & 3.90 & 4.98 & 5.05 \\ 
+  5 & 5.00 & 3.80 & 4.99 & 5.18 \\ 
+  6 & 6.00 & 3.80 & 4.73 & 5.10 \\ 
+   \hline
+\end{tabular}
+\end{table}
+
 
