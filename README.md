@@ -22,12 +22,11 @@ selOverall = c(5, 4.6, 4.4, 3.9, 3.8, 3.8)
 ccrOverall = c(5.39, 5.31, 5.28, 4.98, 4.99, 4.73)
 asOverall = c(5.71, 5.62, 5.7, 5.05, 5.18, 5.1)
 item = c(1:6)
-needsOverall = as.data.frame(cbind(selOverall, ccrOverall, asOverall, item))
+needsOverall = as.data.frame(cbind(item, selOverall, ccrOverall, asOverall))
 head(needsOverall)
 ```
 Here create histograms for each of them
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-# SEL Overall
 theme_set(theme_grey(base_size = 13))
 p = ggplot(needsOverall, aes(x = item, y = selOverall));p
 p = p+geom_bar(stat = "identity"); p
@@ -37,45 +36,55 @@ p = p+ggtitle("SEL Average Scores Across All Items");p
 p = p + theme(plot.title = element_text(hjust = 0.5)); p
 p = p+scale_y_continuous(name="SEL Average Score"); p
 p = p+scale_x_continuous(name="Item Number"); p
-p = p+ scale_x_continuous(breaks=seq(1,6, 1)); p
-```
-Create chnage over time for each of the three
-```{r, message=FALSE, warning=FALSE, echo=FALSE}
-datTimeAgg = round(aggregate(dat, list(dat$time), mean),2)
-datTimeAgg$outcome1Change = Delt(datTimeAgg$outcome1)
-datTimeAgg$outcome2Change = Delt(datTimeAgg$outcome2)
+p = p + scale_x_continuous(breaks=seq(1,6, 1)); p
+p = p+ coord_cartesian(ylim = c(1, 7)); p
+p = p + scale_y_continuous(breaks=seq(1,7, 1)); p
+p = p+ labs(x = "Item Number"); p
+p = p+ labs(y = "SEL Average Score"); p
+
+############CCR###########################
 theme_set(theme_grey(base_size = 13))
-p = ggplot(datTimeAgg, aes(x = time))
-p = p+geom_line(aes(y = outcome1, color = "Outcome 1"))
-p = p+geom_line(aes(y = outcome2, color = "Outcome 2"))
-p = p+labs(y = "Outcomes 1 & 2")
-p = p +expand_limits(y = c(70, 100))
-p = p+ggtitle("Outcomes 1 and 2 Over Time");p
-p = p+ scale_x_continuous(name="SEL Overall ")
+p = ggplot(needsOverall, aes(x = item, y = ccrOverall));p
+p = p+geom_bar(stat = "identity"); p
+p = p + geom_text(aes(label=ccrOverall), vjust=1.6, color="white", size=3.5)+
+  theme_minimal(); p
+p = p+ggtitle("College and Career Readiness Average Scores Across All Items");p
+p = p + theme(plot.title = element_text(hjust = 0.5)); p
+p = p+scale_y_continuous(name="CCR Average Score"); p
+p = p+scale_x_continuous(name="Item Number"); p
+p = p + scale_x_continuous(breaks=seq(1,6, 1)); p
+p = p+ coord_cartesian(ylim = c(1, 7)); p
+p = p + scale_y_continuous(breaks=seq(1,7, 1)); p
+p = p+ labs(x = "Item Number"); p
+p = p+ labs(y = "College and Career Readiness Average Score"); p
+
+############AS###########################
+theme_set(theme_grey(base_size = 13))
+p = ggplot(needsOverall, aes(x = item, y = asOverall));p
+p = p+geom_bar(stat = "identity"); p
+p = p + geom_text(aes(label=asOverall), vjust=1.6, color="white", size=3.5)+
+  theme_minimal(); p
+p = p+ggtitle("Academic Success Average Scores Across All Items");p
+p = p + theme(plot.title = element_text(hjust = 0.5)); p
+p = p+scale_y_continuous(name="Academic Success Average Score"); p
+p = p+scale_x_continuous(name="Item Number"); p
+p = p + scale_x_continuous(breaks=seq(1,6, 1)); p
+p = p+ coord_cartesian(ylim = c(1, 7)); p
+p = p + scale_y_continuous(breaks=seq(1,7, 1)); p
+p = p+ labs(x = "Item Number"); p
+p = p+ labs(y = "Academic Success Average Score"); p
+
 ```
 Create fancy tables for of them.
 ```{r, message=FALSE, warning=FALSE, echo=FALSE}
-theme_set(theme_grey(base_size = 13))
-p = ggplot(datTimeAgg, aes(x = time))
-p = p+geom_line(aes(y = outcome1Change, color = "% Change in Outcome 1"))
-p = p+geom_line(aes(y = outcome2Change, color = "% Change in Outcome 2"))
-p = p+labs(y = "% Change in Outcomes 1 & 2")
-p = p +expand_limits(y = c(-.05, .05))
-scale_x_continuous(limits = c(2, 4))
-p = p+ scale_x_continuous(breaks=seq(2,4, 1))
-p = p + scale_y_continuous(labels = percent)
-p = p+ggtitle("% Change in Outcomes 1 and 2 Over Time");p
+library(formattable)
+formattable(needsOverall)
+testFormat = formattable(needsOverall, list(selOverall = formatter("span",
+   style = function(x) ifelse(x > median(x), "color:red", NA))))
+
+formattable(needsOverall, list(selOverall = formatter(
+    "span", style = x ~ style(color = ifelse(x > median(x) , "red", "green"))), ccrOverall = formatter("span", style = x ~ style(color = ifelse(x > median(x), "red", "green")))))
+
 ```
 
-```{r, message=FALSE, warning=FALSE, echo=FALSE}
-#Outcome 1 over time 
-theme_set(theme_grey(base_size = 13))
-p = ggplot(datTimeAgg, aes(x = time))
-p = p+geom_line(aes(y = fidelity, group = treatment))
-p = p + geom_line(aes(y = fidelity,shape=treatment, color=treatment))
-p = p+labs(y = "% Fidelity")
-p = p +expand_limits(y = c(.25, 1))
-p = p + scale_y_continuous(labels = percent)
-p = p+ggtitle("% Fidelity by Treatment over Time");p
-```
 
